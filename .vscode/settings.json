@@ -1,0 +1,9 @@
+{
+    "python.autoComplete.extraPaths": [
+        "./src"
+    ],
+    "python.linting.enabled": true,
+    "python.linting.prospectorEnabled": false,
+    "python.linting.mypyEnabled": false,
+    "python.linting.pylamaEnabled": true,
+}
