@@ -11,7 +11,7 @@
             "program": "src/usueduroamassociate.py",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--renew", "usu-eduroam-ident.p12"],
+            // "args": ["--renew", "usu-eduroam-ident.p12"],
             // "args": ["--loglevel=DEBUG"]
         
         }

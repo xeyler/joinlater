@@ -41,9 +41,8 @@ mediator = SecureW2ApiMediator()
 certificate = mediator.create_certificate(new_private_key, keys_to_unenroll)
 
 new_private_key.set_der_cert(certificate)
-new_private_key.save_as_pkcs12(
-    'USU eduroam private key and certificate',
-    Path('usu-eduroam-ident.p12')
+new_private_key.save_as_pem_files(
+    Path('usu-eduroam-ident')
 )
 
 logging.info('Finished')

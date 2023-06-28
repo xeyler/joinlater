@@ -4,7 +4,7 @@ from getpass import getpass
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
-from cryptography.hazmat.primitives.serialization import pkcs12
+from cryptography.hazmat.primitives.serialization import pkcs12, Encoding
 from cryptography.x509.oid import NameOID
 
 logger = logging.getLogger(__name__)
@@ -70,15 +70,12 @@ class PrivateKey():
     def set_der_cert(self, cert_bytes):
         self._cert = x509.load_der_x509_certificate(cert_bytes)
 
-    def save_as_pkcs12(self, name, pkcs12_path):
-        while True:
-            password = getpass('Enter a password to encrypt private key: ').encode()
-            confirmation = getpass('Re-enter password: ').encode()
-            if password == confirmation:
-                break
-            print("Passwords don't match! Try again.")
-
-        pkcs12_path.write_bytes(pkcs12.serialize_key_and_certificates(
-            name=name.encode('utf-8'), key=self._private_key, cert=self._cert,
-            cas=None, encryption_algorithm=serialization.BestAvailableEncryption(password)
+    def save_as_pem_files(self, output_path):
+        private_key_output = output_path.with_suffix('.key')
+        private_key_output.write_bytes(self._private_key.private_bytes(
+            encoding=Encoding.PEM,
+            format=serialization.PrivateFormat.PKCS8,
+            encryption_algorithm=serialization.NoEncryption()
         ))
+        cert_output = output_path.with_suffix('.crt')
+        cert_output.write_bytes(self._cert.public_bytes(Encoding.PEM))
