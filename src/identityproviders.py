@@ -31,6 +31,5 @@ class PrivateKeySignChallenge():
     def __init__(self, id, private_key, challenge_bytes):
         self.id = id
         self.client_nonce = secrets.token_bytes(64)
-        self.private_key = private_key
         nonces_digest = sha1(challenge_bytes + self.client_nonce).digest()
         self.signed_nonces = private_key.sign(nonces_digest)
