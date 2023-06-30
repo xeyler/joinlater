@@ -42,6 +42,11 @@ class SecureW2ApiMediator():
         except requests.JSONDecodeError as e:
             logger.error('SecureW2 API responded with malformed json')
             raise SystemExit(1) from e
+        except requests.ConnectionError as e:
+            logger.error(
+                'Could not connect to SecureW2 endpoint. '
+                'Are you connected to the internet?')
+            raise SystemExit(1) from e
         finally:
             if response is not None:
                 logger.debug('sent: %s', response.request.body.decode('utf-8'))
@@ -165,7 +170,7 @@ class EnrollRequest(Request):
             #     signing challenge/old certs we send alongside our CSR
             #  2. Whoever uses this script typically won't be using it multiple
             #     times to generate one cert for one device. Especially since
-            #     Secure W2 CA makes certs valid for *checks notes* 10 years...
+            #     Secure W2 CA makes certs valid for *checks notes* 5 years...
             #  3. As a fallback, the official client will generate this value
             #     using random data when the sysfs objects it relies on are
             #     nowhere to be found. And if Secure W2 does something, then it
