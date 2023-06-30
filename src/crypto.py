@@ -4,41 +4,61 @@ from getpass import getpass
 from cryptography import x509
 from cryptography.hazmat.primitives import hashes, serialization
 from cryptography.hazmat.primitives.asymmetric import padding, rsa
-from cryptography.hazmat.primitives.serialization import pkcs12, Encoding
+from cryptography.hazmat.primitives.serialization import Encoding
 from cryptography.x509.oid import NameOID
 
 logger = logging.getLogger(__name__)
 
 
-class PrivateKey():
-    def __init__(self, pkcs12_path=None, password=None):
-        if pkcs12_path is None:
-            # Generate an RSA private key with the same values that Secure W2
-            # uses
-            self._private_key = rsa.generate_private_key(
-                key_size=2048,
-                public_exponent=65537
-            )
-        elif pkcs12_path.suffix in ['.p12', '.pfx']:
-            try:
-                pkcs12_bundle = pkcs12.load_pkcs12(
-                    pkcs12_path.read_bytes(),
-                    password
-                )
-                self._private_key = pkcs12_bundle.key
-                self._cert = pkcs12_bundle.cert.certificate
-            except ValueError as e:
-                if password is not None:
-                    logger.error(str(e))
-                # If we couldn't load the file before, try again after
-                # prompting for a password
-                password = getpass(f'Password for {pkcs12_path}: ').encode()
-                self.__init__(pkcs12_path, password=password)
-        else:
-            logger.error(
-                'Unrecognized private key format: %s',
-                pkcs12_path.suffix)
+class PrivateKeyCertPair():
+    @classmethod
+    def generate(cls):
+        new_private_key = rsa.generate_private_key(
+            key_size=2048,
+            public_exponent=65537
+        )
+        return cls(new_private_key, cert=None)
+
+    @classmethod
+    def from_pkcs12(cls, path):
+        cls.verify_file_exists(path)
+
+        pkcs12_bundle = cls.load_password_protected_key(
+            path, serialization.pkcs12.load_pkcs12)
+        return cls(pkcs12_bundle.key, pkcs12_bundle.cert.certificate)
+
+    @classmethod
+    def from_pem_files(cls, key_path, cert_path):
+        cls.verify_file_exists(key_path)
+        cls.verify_file_exists(cert_path)
+
+        private_key = cls.load_password_protected_key(
+            key_path, serialization.load_pem_private_key
+        )
+        cert = x509.load_pem_x509_certificate(cert_path.read_bytes())
+        return cls(private_key, cert)
+
+    @classmethod
+    def load_password_protected_key(cls, key_path, load_method, password=None):
+        try:
+            return load_method(key_path.read_bytes(), password)
+        except ValueError as e:
+            if password is not None:
+                logger.error(str(e))
+            # If we couldn't load the file before, recurse with password
+            # supplied by user
+            password = getpass(f'Password for {key_path}: ').encode()
+            return cls.load_password_protected_key(
+                key_path, load_method, password)
+
+    def verify_file_exists(path):
+        if not path.is_file():
+            logger.error(f"'{path}' is not a file")
             raise SystemExit(1)
+
+    def __init__(self, private_key, cert):
+        self._private_key = private_key
+        self._cert = cert
 
     def create_csr(self):
         builder = x509.CertificateSigningRequestBuilder()

@@ -1,5 +1,5 @@
 from securew2api import SecureW2ApiMediator
-from crypto import PrivateKey
+from crypto import PrivateKeyCertPair
 
 import logging
 import sys
@@ -25,24 +25,26 @@ logging.basicConfig(
     format="%(message)s",
     stream=sys.stdout)
 
-new_private_key = PrivateKey()
+new_key_cert_pair = PrivateKeyCertPair.generate()
 
 keys_to_unenroll = []
 for key_file in args.renew:
-    if not Path(key_file).exists():
-        logger.error('Keyfile does not exist: %s', key_file)
-        raise SystemExit(1)
-    keys_to_unenroll.append(PrivateKey(Path(key_file)))
-logger.debug('Keys to be unenrolled: %s',
-             [str(path) for path in keys_to_unenroll])
+    if ':' in key_file:
+        pem_files = key_file.split(':')
+        if not pem_files[0].endswith('.key'):
+            pem_files.reverse()
+        pem_key_file = Path(pem_files[0])
+        pem_cert_file = Path(pem_files[1])
+        keys_to_unenroll.append(
+            PrivateKeyCertPair.from_pem_files(pem_key_file, pem_cert_file))
+    else:
+        keys_to_unenroll.append(PrivateKeyCertPair.from_pkcs12(Path(key_file)))
 
 mediator = SecureW2ApiMediator()
 
-certificate = mediator.create_certificate(new_private_key, keys_to_unenroll)
+certificate = mediator.create_certificate(new_key_cert_pair, keys_to_unenroll)
 
-new_private_key.set_der_cert(certificate)
-new_private_key.save_as_pem_files(
-    Path('usu-eduroam-ident')
-)
+new_key_cert_pair.set_der_cert(certificate)
+new_key_cert_pair.save_as_pem_files(Path('usu-eduroam-ident'))
 
 logging.info('Finished')
