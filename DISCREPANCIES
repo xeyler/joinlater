@@ -1,0 +1,8 @@
+Certificate signing requests are not generated quite the same way that the
+official client generates them. The CA apparently doesn't care currently.
+
+Information regarding the user's system is not sent, including the MAC
+addresses of network interfaces. This is important because it's possible that
+USU's networking hardware checks your MAC address against what it expects it to
+be before forwarding the association request to the RADIUS server. It would
+appear, however, that this is not the case currently.
