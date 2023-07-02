@@ -90,6 +90,10 @@ class PrivateKeyCertPair():
     def set_der_cert(self, cert_bytes):
         self._cert = x509.load_der_x509_certificate(cert_bytes)
 
+    def get_cert_common_name(self):
+        subject = self._cert.subject
+        return subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
+
     def save_as_pem_files(self, output_path):
         private_key_output = output_path.with_suffix('.key')
         private_key_output.write_bytes(self._private_key.private_bytes(

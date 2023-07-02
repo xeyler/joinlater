@@ -55,7 +55,7 @@ class SecureW2ApiMediator():
     def create_certificate(self, private_key, old_keys):
         oauth_code = SecureW2Oauth.authenticate()
 
-        print('Requesting certificate signature from Secure W2...')
+        logger.info('Requesting certificate signature from Secure W2...')
         old_certs = [key.get_der_cert() for key in old_keys]
 
         challenge_response = self.send_request(ChallengeRequest(old_certs))
@@ -77,6 +77,8 @@ class SecureW2ApiMediator():
         )
 
         signed_certs = enroll_reponse['signedCertificates']
+
+        logger.info('Success!')
         # I'm not sure why, but the API seemingly allows the user to submit
         # multiple certificate signing requests in one request. Thus, it
         # returns a list of signed certificates on success. We're only
@@ -84,7 +86,7 @@ class SecureW2ApiMediator():
         return b64decode(signed_certs[0])
 
     def check_version(self):
-        print('Checking Secure W2 API version...')
+        logger.info('Checking Secure W2 API version...')
         response = self.send_request(VersionRequest(), check_for_errors=False)
         if response['version'] != API_VERSION:
             logger.error(
@@ -92,7 +94,7 @@ class SecureW2ApiMediator():
                 response['version'])
             raise SystemExit(1)
         else:
-            print(f'Version {response["version"]} accepted')
+            logger.info(f'Version {response["version"]} accepted')
 
 
 class Request():
