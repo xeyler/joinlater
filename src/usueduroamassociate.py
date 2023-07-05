@@ -51,5 +51,11 @@ if __name__ == '__main__':
 
     Path('securew2-CA-ident.crt').write_text(config.SECUREW2_CA_CERTIFICATE)
 
+    print(
+        'Wrote user private key, user certificate, and CA certificate to '
+        'current directory.')
+    print(
+        'You may now configure your networking software to connect to '
+        'eduroam.')
     print(f'Identity: {new_identity.get_cert_common_name()}')
     print(f'Domain: {config.CONNECTION_DOMAIN}')
