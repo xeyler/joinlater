@@ -5,15 +5,13 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python: Current File",
+            "name": "JoinNow Debug Output",
             "type": "python",
             "request": "launch",
-            "program": "src/usueduroamassociate.py",
+            "module": "joinlater",
             "console": "integratedTerminal",
             "justMyCode": true,
-            "args": ["--renew", "usu-eduroam-ident.crt:usu-eduroam-ident.key", "--loglevel=DEBUG"],
-            // "args": ["--loglevel=DEBUG"]
-        
+            "args": ["--loglevel=DEBUG"]
         }
     ]
 }
