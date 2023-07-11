@@ -1,7 +1,7 @@
 from furl import furl
 
-import config
-from simplehttpcallback import HTTPCallbackServer
+from joinlater import config
+from joinlater.simplehttpcallback import HTTPCallbackServer
 
 import secrets
 from hashlib import sha1

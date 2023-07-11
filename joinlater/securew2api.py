@@ -7,8 +7,9 @@ from hashlib import sha1
 import requests
 from requests import ConnectTimeout, ReadTimeout
 
-import config
-from identityproviders import PrivateKeySignChallenge, SecureW2Oauth
+import joinlater
+from joinlater import config
+from joinlater.identityproviders import PrivateKeySignChallenge, SecureW2Oauth
 
 logger = logging.getLogger(__name__)
 
@@ -128,7 +129,7 @@ class EnrollRequest(Request):
             self, oauth_code, key_challenges, transaction_id, csr,
             old_der_certs):
         super().__init__()
-        self.payload |= {'type': 'enroll' if old_der_certs == [] else 'renew'}
+        self.payload |= {'type': 'renew' if old_der_certs else 'enroll'}
         # The official client sets identity to an empty string when using Oauth
         # Why? That's a question I've grown accustomed to not having answered
         self.payload |= {'identity': ''}
@@ -188,7 +189,7 @@ class EnrollRequest(Request):
             'clientId': secrets.token_hex(20),
             'adapters': {'wireless': []},
             'applicationFriendlyName': 'JoinLater for Linux',
-            'applicationVersion': '3.14',
+            'applicationVersion': joinlater.__version__,
             'buildModel': '',
             'computerIdentity': '',
             'operatingSystem': '',

@@ -1,0 +1,18 @@
+[build-system]
+requires = ["setuptools"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "joinlater"
+dependencies = [
+    "cryptography",
+    "requests",
+    "furl"
+]
+dynamic = ["version"]
+
+[tool.setuptools.dynamic]
+version = {attr = "joinlater.__version__"}
+
+[project.scripts]
+joinlater = "joinlater.usueduroamassociate:run"

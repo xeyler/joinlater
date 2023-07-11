@@ -11,3 +11,4 @@ furl = "*"
 [dev-packages]
 prospector = "*"
 pylama = "*"
+build = "*"

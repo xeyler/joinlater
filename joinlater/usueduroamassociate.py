@@ -1,6 +1,6 @@
-import config
-from securew2api import SecureW2ApiMediator
-from crypto import PrivateKeyCertPair
+from joinlater import config
+from joinlater.securew2api import SecureW2ApiMediator
+from joinlater.crypto import PrivateKeyCertPair
 
 import logging
 import sys
@@ -12,8 +12,13 @@ logger = logging.getLogger(__name__)
 argparser = ArgumentParser(
     description="Connect to Utah State University's eduroam network.")
 
-argparser.add_argument('--loglevel', default='INFO')
-argparser.add_argument('--renew', nargs='+', default=[])
+argparser.add_argument(
+    '--loglevel', choices=['CRITICAL', 'ERROR', 'WARNING', 'INFO', 'DEBUG'],
+    default='INFO')
+argparser.add_argument(
+    '--renew', nargs='+',
+    help="Private key/user cert pairs to renew via SecureW2",
+    metavar=("user-ident.key:user-ident.crt", "user-ident.p12"), default=[])
 args = argparser.parse_args()
 
 numeric_level = getattr(logging, args.loglevel.upper(), None)
@@ -26,7 +31,8 @@ logging.basicConfig(
     format="%(message)s",
     stream=sys.stdout)
 
-if __name__ == '__main__':
+
+def run():
     new_identity = PrivateKeyCertPair.generate()
 
     keys_to_unenroll = []
@@ -59,3 +65,7 @@ if __name__ == '__main__':
         'eduroam.')
     print(f'Identity: {new_identity.get_cert_common_name()}')
     print(f'Domain: {config.CONNECTION_DOMAIN}')
+
+
+if __name__ == '__main__':
+    run()
