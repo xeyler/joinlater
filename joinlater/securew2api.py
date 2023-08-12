@@ -8,7 +8,6 @@ import requests
 from requests import ConnectTimeout, ReadTimeout
 
 import joinlater
-from joinlater import config
 from joinlater.identityproviders import PrivateKeySignChallenge, SecureW2Oauth
 
 logger = logging.getLogger(__name__)
@@ -17,16 +16,16 @@ API_VERSION = '1.4'
 
 
 class SecureW2ApiMediator():
-    ENDPOINT_URL = config.SECUREW2_PKI_ENDPOINT_URL
-
-    def __init__(self):
+    def __init__(self, config):
+        self.config = config
         self.check_version()
 
     def send_request(self, request, timeout=10, check_for_errors=True):
         response = None
         try:
             response = requests.post(
-                self.ENDPOINT_URL, json=request.payload, timeout=20)
+                self.config.pki_endpoint_url, json=request.payload,
+                timeout=20)
             response.raise_for_status()
             json_response = response.json()
             if check_for_errors and json_response['error'] != 0:
@@ -54,7 +53,7 @@ class SecureW2ApiMediator():
                 logger.debug('received: %s', response.text)
 
     def create_certificate(self, private_key, old_keys):
-        oauth_code = SecureW2Oauth.authenticate()
+        oauth_code = SecureW2Oauth.authenticate(self.config)
 
         logger.debug('Requesting certificate signature from Secure W2...')
         old_certs = [key.get_der_cert() for key in old_keys]
@@ -73,7 +72,8 @@ class SecureW2ApiMediator():
 
         enroll_reponse = self.send_request(
             EnrollRequest(
-                oauth_code, signing_challenges, transaction_id, csr, old_certs
+                oauth_code, signing_challenges, transaction_id, csr, old_certs,
+                self.config
             )
         )
 
@@ -127,7 +127,7 @@ class ChallengeRequest(Request):
 class EnrollRequest(Request):
     def __init__(
             self, oauth_code, key_challenges, transaction_id, csr,
-            old_der_certs):
+            old_der_certs, config):
         super().__init__()
         self.payload |= {'type': 'renew' if old_der_certs else 'enroll'}
         # The official client sets identity to an empty string when using Oauth
@@ -199,7 +199,7 @@ class EnrollRequest(Request):
             'userDescription': ''}
         }
         self.payload |= {'configInfo': {
-            'profileId': config.DEVICE_CONFIG_PROFILE_UUID,
-            'deviceConfigName': config.DEVICE_CONFIG_NAME,
-            'organizationId': config.ORGANIZATION_UID
+            'profileId': config.organization_profile_uuid,
+            'deviceConfigName': config.organization_name,
+            'organizationId': config.organization_uid
         }}

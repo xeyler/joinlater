@@ -7,8 +7,10 @@ name = "pypi"
 requests = "*"
 cryptography = "*"
 furl = "*"
+asn1crypto = "*"
 
 [dev-packages]
 prospector = "*"
 pylama = "*"
 build = "*"
+pytest = "*"

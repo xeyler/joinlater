@@ -1,3 +1,3 @@
-import joinlater.usueduroamassociate
+import joinlater.eduroamassociate
 
-joinlater.usueduroamassociate.run()
+joinlater.eduroamassociate.run()

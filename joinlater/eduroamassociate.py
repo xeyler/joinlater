@@ -1,5 +1,5 @@
-from joinlater import config
 from joinlater.securew2api import SecureW2ApiMediator
+from joinlater.securew2config import SecureW2Config
 from joinlater.crypto import PrivateKeyCertPair
 
 import logging
@@ -48,14 +48,25 @@ def run():
         else:
             keys_to_unenroll.append(PrivateKeyCertPair.from_pkcs12(Path(key_file)))
 
-    mediator = SecureW2ApiMediator()
+    while True:
+        securew2_url = input("Input your organization's SecureW2 URL: ")
+
+        config_url = securew2_url + '/linux/SecureW2.cloudconfig'
+        config = SecureW2Config.from_URL(config_url)
+
+        confirmation = input(f'Associate with {config.organization_title}? '
+            '[y/N] ')
+        if confirmation.lower() in ('y', 'yes'):
+            break
+
+    mediator = SecureW2ApiMediator(config)
 
     certificate = mediator.create_certificate(new_identity, keys_to_unenroll)
 
     new_identity.set_der_cert(certificate)
-    new_identity.save_as_pem_files(Path('usu-eduroam-ident'))
+    new_identity.save_as_pem_files(Path('eduroam-ident'))
 
-    Path('securew2-CA-ident.crt').write_text(config.SECUREW2_CA_CERTIFICATE)
+    Path('securew2-CA-ident.crt').write_text(config.ca_certificate)
 
     print(
         'Wrote user private key, user certificate, and CA certificate to '
@@ -64,7 +75,7 @@ def run():
         'You may now configure your networking software to connect to '
         'eduroam.')
     print(f'Identity: {new_identity.get_cert_common_name()}')
-    print(f'Domain: {config.CONNECTION_DOMAIN}')
+    print(f'Domain: {config.eap_server}')
 
 
 if __name__ == '__main__':

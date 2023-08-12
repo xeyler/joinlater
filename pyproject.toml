@@ -15,4 +15,4 @@ dynamic = ["version"]
 version = {attr = "joinlater.__version__"}
 
 [project.scripts]
-joinlater = "joinlater.usueduroamassociate:run"
+joinlater = "joinlater.eduroamassociate:run"
