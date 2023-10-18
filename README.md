@@ -12,8 +12,7 @@ The following commands will get you started:
 # Dependencies
 sudo apt update
 sudo apt install python3-pip python3-venv
-mkdir ~/.joinlater
-cd ~/.joinlater
+mkdir ~/.joinlater && cd ~/.joinlater
 
 # Make a virtual environment to avoid conflicting with apt
 python3 -m venv joinlater
@@ -34,7 +33,7 @@ Here's how it's done on Linux Mint Cinnamon:
 
 ![Cinnamon](/img/Cinnamon.png)
 
-Largely the same as the previous example...ELABORATE
+Largely the same as the previous example. You'll also need to add a user key password, but just like with KDE it doesn't matter. You may get an alert that says "Unencrypted private keys are insecure" but you can ignore it.
 
 ## Arch-based distros
 
