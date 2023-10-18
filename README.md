@@ -11,7 +11,7 @@ The following commands will get you started:
 ```
 # Dependencies
 sudo apt update
-sudo apt install python3-pip python3-venv
+sudo apt install python3-pip python3-venv -y
 mkdir ~/.joinlater && cd ~/.joinlater
 
 # Make a virtual environment to avoid conflicting with apt
@@ -23,7 +23,7 @@ pip install https://github.com/Xeyler/joinlater/releases/download/v0.1.0/joinlat
 joinlater
 ```
 
-After your certs are generated, you'll need to edit your eduroam connection settings. Here's how I did it on Debian running KDE.
+Follow the instructions printed to the terminal. After your certs are generated, you'll need to edit your eduroam connection settings. Here's how it's done on Debian running KDE.
 
 ![KDE Debian](/img/KDE.png)
 
