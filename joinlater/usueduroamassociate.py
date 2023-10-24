@@ -1,6 +1,8 @@
 from joinlater import config
 from joinlater.securew2api import SecureW2ApiMediator
 from joinlater.crypto import PrivateKeyCertPair
+from joinlater.networking import networking
+from joinlater.networking.mediator import WPA2EnterpriseConnectionSettings
 
 import logging
 import sys
@@ -52,20 +54,39 @@ def run():
 
     certificate = mediator.create_certificate(new_identity, keys_to_unenroll)
 
+    joinlater_home = Path.home() / Path('.joinlater')
+    joinlater_home.mkdir(parents=True, exist_ok=True)
+
+    private_key_path = joinlater_home / Path('ident.key')
+    private_cert_path = joinlater_home / Path('ident.crt')
+    ca_cert_path = joinlater_home / Path('ca.crt')
+
     new_identity.set_der_cert(certificate)
-    new_identity.save_as_pem_files(Path('usu-eduroam-ident'))
+    private_key_pass = new_identity.save_as_pem_files(
+        private_key_path, private_cert_path)
 
-    Path('securew2-CA-ident.crt').write_text(config.SECUREW2_CA_CERTIFICATE)
+    ca_cert_path.write_text(config.SECUREW2_CA_CERTIFICATE)
 
-    print(
-        'Wrote user private key, user certificate, and CA certificate to '
-        'current directory.')
-    print(
-        'You may now configure your networking software to connect to '
-        'eduroam.')
-    print(f'Identity: {new_identity.get_cert_common_name()}')
-    print(f'Domain: {config.CONNECTION_DOMAIN}')
+    settings = WPA2EnterpriseConnectionSettings(
+        private_key_path,
+        private_key_pass,
+        private_cert_path,
+        ca_cert_path,
+        new_identity.get_cert_common_name(),
+        config.CONNECTION_DOMAIN,
+        "eduroam"
+    )
 
+    if not networking.add_connection(settings):
+        print(
+            'Wrote user private key, user certificate, and CA certificate to '
+            str(joinlater_home))
+        print(
+            'You may now configure your networking software to connect to '
+            'eduroam.')
+        print(f'Identity: {new_identity.get_cert_common_name()}')
+        print(f'Domain: {config.CONNECTION_DOMAIN}')
+        print(f'Private key password: {private_key_pass}')
 
 if __name__ == '__main__':
     run()

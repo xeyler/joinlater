@@ -1,4 +1,6 @@
 import logging
+import secrets
+import string
 from getpass import getpass
 
 from cryptography import x509
@@ -94,12 +96,17 @@ class PrivateKeyCertPair():
         subject = self._cert.subject
         return subject.get_attributes_for_oid(NameOID.COMMON_NAME)[0].value
 
-    def save_as_pem_files(self, output_path):
-        private_key_output = output_path.with_suffix('.key')
-        private_key_output.write_bytes(self._private_key.private_bytes(
+    def save_as_pem_files(self, key_path, cert_path) -> bytes:
+        alphabet = string.ascii_letters + string.digits
+        password = ''.join(secrets.choice(alphabet) for i in range(20))
+
+        key_path.write_bytes(self._private_key.private_bytes(
             encoding=Encoding.PEM,
             format=serialization.PrivateFormat.PKCS8,
-            encryption_algorithm=serialization.NoEncryption()
+            encryption_algorithm=serialization.BestAvailableEncryption(
+                password.encode('utf-8')
+            )
         ))
-        cert_output = output_path.with_suffix('.crt')
-        cert_output.write_bytes(self._cert.public_bytes(Encoding.PEM))
+        cert_path.write_bytes(self._cert.public_bytes(Encoding.PEM))
+
+        return password
