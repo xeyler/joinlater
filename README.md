@@ -2,7 +2,7 @@
 
 JoinLater may be installed as a pip package:
 
-`pip install https://github.com/Xeyler/joinlater/releases/download/v0.2.0/joinlater-0.2.0.tar.gz`
+`pip install https://github.com/Xeyler/joinlater/releases/download/v0.2.1/joinlater-0.2.1.tar.gz`
 
 ## Debian-based distros
 
@@ -19,7 +19,7 @@ python3 -m venv joinlater
 source joinlater/bin/activate
 
 # Installation
-pip install https://github.com/Xeyler/joinlater/releases/download/v0.2.0/joinlater-0.2.0.tar.gz
+pip install https://github.com/Xeyler/joinlater/releases/download/v0.2.1/joinlater-0.2.1.tar.gz
 joinlater
 ```
 
