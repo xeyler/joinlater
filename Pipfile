@@ -7,6 +7,7 @@ name = "pypi"
 requests = "*"
 cryptography = "*"
 furl = "*"
+sdbus = "*"
 sdbus-networkmanager = "*"
 
 [dev-packages]

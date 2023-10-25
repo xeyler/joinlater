@@ -77,13 +77,15 @@ def run():
         "eduroam"
     )
 
-    if not networking.add_connection(settings):
+    if networking.add_connection(settings):
+        print("Connection saved successfully!")
+    else:
         print(
-            'Wrote user private key, user certificate, and CA certificate to '
+            'Wrote user private key, user certificate, and CA certificate to ' +
             str(joinlater_home))
         print(
-            'You may now configure your networking software to connect to '
-            'eduroam.')
+            'Use the following information to manually configure your '
+            'networking software to connect to eduroam.')
         print(f'Identity: {new_identity.get_cert_common_name()}')
         print(f'Domain: {config.CONNECTION_DOMAIN}')
         print(f'Private key password: {private_key_pass}')

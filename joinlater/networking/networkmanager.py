@@ -4,7 +4,9 @@ from uuid import uuid4
 from sdbus_block.networkmanager import NetworkManagerSettings
 from sdbus_block.networkmanager import NetworkManagerConnectionProperties
 
-from joinlater.networking.mediator import NetworkConfigurationMediator, WPA2EnterpriseConnectionSettings
+from joinlater.networking.mediator import (
+    NetworkConfigurationMediator,
+    WPA2EnterpriseConnectionSettings)
 
 logger = logging.getLogger(__name__)
 
@@ -13,7 +15,9 @@ class NetworkManagerMediator(NetworkConfigurationMediator):
         sdbus.set_default_bus(sdbus.sd_bus_open_system())
 
         if NetworkManagerSettings().get_connections_by_id(connection_settings.ssid):
-            logger.warning(f'Connection "{connection_settings.ssid}" already exists!')
+            logger.warning(
+                f'Refusing to configure NetworkManager because connection '
+                f'"{connection_settings.ssid}" already exists!')
             return False
 
         ca_cert_path = "file://" + \
@@ -38,8 +42,8 @@ class NetworkManagerMediator(NetworkConfigurationMediator):
                 "domain-suffix-match": ("s", connection_settings.domain),
                 "eap": ("as", ["tls"]),
                 "ca-cert": ("ay", ca_cert_path),
-                "client-cert" : ("ay", private_cert_path),
-                "private-key" : ("ay", private_key_path),
+                "client-cert": ("ay", private_cert_path),
+                "private-key": ("ay", private_key_path),
                 "private-key-password": ("s", connection_settings.private_key_password),
                 "private-key-password-flags": ("u", 0),
             },
