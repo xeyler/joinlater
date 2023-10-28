@@ -9,12 +9,13 @@ JoinLater may be installed as a pip package:
 The following commands will get you started:
 
 ```
-# Dependencies
+# Install pip and venv
 sudo apt update
 sudo apt install python3-pip python3-venv -y
-mkdir ~/.joinlater && cd ~/.joinlater
 
 # Make a virtual environment to avoid conflicting with apt
+mkdir ~/.joinlater
+cd ~/.joinlater
 python3 -m venv joinlater
 source joinlater/bin/activate
 
@@ -23,17 +24,7 @@ pip install https://github.com/Xeyler/joinlater/releases/download/v0.2.1/joinlat
 joinlater
 ```
 
-Follow the instructions printed to the terminal. After your certs are generated, you'll need to edit your eduroam connection settings. Here's how it's done on Debian running KDE.
-
-![KDE Debian](/img/KDE.png)
-
-Using `ls -a` in your home folder will help you find the `.joinlater` directory and the appropriate paths to the User certificate, CA certificate, and Private key. The private key password doesn't matter, so you can put anything in that box (NetworkManager requires that it's filled for some reason).
-
-Here's how it's done on Linux Mint Cinnamon:
-
-![Cinnamon](/img/Cinnamon.png)
-
-Largely the same as the previous example. You'll also need to add a user key password, but just like with KDE it doesn't matter. You may get an alert that says "Unencrypted private keys are insecure" but you can ignore it.
+Follow the instructions printed to the terminal. After your certs are generated, your network connection should be configured automaticaly if your distro uses NetworkManager. If not, you'll need to configure your network software manually by providing the identity and domain which are printed to the terminal, as well as the file paths to `ca.crt`,  `ident.crt`, and  `ident.key`.
 
 ## Arch-based distros
 
